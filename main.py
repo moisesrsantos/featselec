@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from sklearn.feature_selection import VarianceThreshold, SelectPercentile, chi2, f_classif
+from sklearn.impute import SimpleImputer
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
@@ -20,8 +21,8 @@ for name in data_list:
     original = {
         'dt_mean': list(),
         'dt_std': list(),
-        # 'svm_mean': list(),
-        # 'svm_std': list(),
+        'svm_mean': list(),
+        'svm_std': list(),
         'rf_mean': list(),
         'rf_std': list(),
         'knn_mean': list(),
@@ -30,9 +31,9 @@ for name in data_list:
     variance = {
         'dt_mean': list(),
         'dt_std': list(),
-        # 'svm_mean': list(),
-        # 'svm_std': list(),
-        # 'svm_percent': list(),
+        'svm_mean': list(),
+        'svm_std': list(),
+        'svm_percent': list(),
         'rf_mean': list(),
         'rf_std': list(),
         'knn_mean': list(),
@@ -45,8 +46,8 @@ for name in data_list:
     chisquared = {
         'dt_mean': list(),
         'dt_std': list(),
-        # 'svm_mean': list(),
-        # 'svm_std': list(),
+        'svm_mean': list(),
+        'svm_std': list(),
         'rf_mean': list(),
         'rf_std': list(),
         'knn_mean': list(),
@@ -54,13 +55,13 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
-        # 'svm_percent': list(),
+        'svm_percent': list(),
     }
     anova = {
         'dt_mean': list(),
         'dt_std': list(),
-        # 'svm_mean': list(),
-        # 'svm_std': list(),
+        'svm_mean': list(),
+        'svm_std': list(),
         'rf_mean': list(),
         'rf_std': list(),
         'knn_mean': list(),
@@ -68,13 +69,13 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
-        # 'svm_percent': list(),
+        'svm_percent': list(),
     }
     principal = {
         'dt_mean': list(),
         'dt_std': list(),
-        # 'svm_mean': list(),
-        # 'svm_std': list(),
+        'svm_mean': list(),
+        'svm_std': list(),
         'rf_mean': list(),
         'rf_std': list(),
         'knn_mean': list(),
@@ -82,7 +83,7 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
-        # 'svm_percent': list(),
+        'svm_percent': list(),
     }
     nruns = 30
 
@@ -119,19 +120,19 @@ for name in data_list:
     hp_f_cla = {"f_cla__percentile": [5, 10, 15, 20]}
     hp_pca = {"pca__n_components": [.8, .85, .9, .95]}
 
-    # models = [dt, svm, rf, knn]
-    # models2 = ['dt', 'svm', 'rf', 'knn']
-    # hyperparameters = [hp_dt, hp_svm, hp_rf, hp_knn]
-    models = [dt, rf, knn]
-    models2 = ['dt', 'rf', 'knn']
-    hyperparameters = [hp_dt, hp_rf, hp_knn]
+    models = [dt, svm, rf, knn]
+    models2 = ['dt', 'svm', 'rf', 'knn']
+    hyperparameters = [hp_dt, hp_svm, hp_rf, hp_knn]
+    # models = [dt, rf, knn]
+    # models2 = ['dt', 'rf', 'knn']
+    # hyperparameters = [hp_dt, hp_rf, hp_knn]
     i = 0
 
     for m, h in zip(models, hyperparameters):
         stkf = StratifiedKFold(10)
 
         # pipe original
-        pipe = Pipeline(steps=[(str(models2[i]), m)])
+        pipe = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')),(str(models2[i]), m)])
         search = RandomizedSearchCV(pipe, h, n_jobs=-1, cv=stkf, n_iter=nruns, scoring='balanced_accuracy')
         search.fit(X, y)
         # print(search.best_estimator_)
@@ -140,7 +141,7 @@ for name in data_list:
 
         # pipe vt
         try:
-            pipe_vt = Pipeline(steps=[('vt', vt), (str(models2[i]), m)])
+            pipe_vt = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('vt', vt), (str(models2[i]), m)])
             search_vt = RandomizedSearchCV(pipe_vt, {**hp_vt, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                            scoring='balanced_accuracy')
             search_vt.fit(X, y)
@@ -151,7 +152,7 @@ for name in data_list:
                 (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (
                         X.shape[1] + sum(search_vt.best_estimator_.named_steps['vt'].get_support())))
         except:
-            pipe_vt = Pipeline(steps=[('vt', vt), (str(models2[i]), m)])
+            pipe_vt = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('vt', vt), (str(models2[i]), m)])
             search_vt = RandomizedSearchCV(pipe_vt, {**h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                            scoring='balanced_accuracy')
             search_vt.fit(X, y)
@@ -164,7 +165,7 @@ for name in data_list:
 
 
         # pipe chi
-        pipe_chi = Pipeline(steps=[('chi', chi), (str(models2[i]), m)])
+        pipe_chi = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('chi', chi), (str(models2[i]), m)])
         search_chi = RandomizedSearchCV(pipe_chi, {**hp_chi, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                         scoring='balanced_accuracy')
         search_chi.fit(X, y)
@@ -175,7 +176,7 @@ for name in data_list:
                     X.shape[1] + sum(search_chi.best_estimator_.named_steps['chi'].get_support())))
 
         # pipe f_classif
-        pipe_f_cla = Pipeline(steps=[('f_cla', f_cla), (str(models2[i]), m)])
+        pipe_f_cla = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('f_cla', f_cla), (str(models2[i]), m)])
         search_f_cla = RandomizedSearchCV(pipe_f_cla, {**hp_f_cla, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                           scoring='balanced_accuracy')
         search_f_cla.fit(X, y)
@@ -186,7 +187,7 @@ for name in data_list:
                     X.shape[1] + sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())))
 
         # pipe pca
-        pipe_pca = Pipeline(steps=[('pca', pca), (str(models2[i]), m)])
+        pipe_pca = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('pca', pca), (str(models2[i]), m)])
         search_pca = RandomizedSearchCV(pipe_pca, {**hp_pca, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                         scoring='balanced_accuracy')
         search_pca.fit(X, y)
