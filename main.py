@@ -40,6 +40,7 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
+
     }
     chisquared = {
         'dt_mean': list(),
@@ -53,6 +54,7 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
+        # 'svm_percent': list(),
     }
     anova = {
         'dt_mean': list(),
@@ -66,6 +68,7 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
+        # 'svm_percent': list(),
     }
     principal = {
         'dt_mean': list(),
@@ -79,6 +82,7 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
+        # 'svm_percent': list(),
     }
     nruns = 30
 
