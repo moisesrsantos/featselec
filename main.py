@@ -10,7 +10,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from sklearn.feature_selection import VarianceThreshold, SelectPercentile, chi2, f_classif
-from sklearn.impute import SimpleImputer
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
@@ -21,6 +20,10 @@ for name in data_list:
     original = {
         'dt_mean': list(),
         'dt_std': list(),
+        'dt_time': list(),
+        'svm_time': list(),
+        'rf_time': list(),
+        'knn_time': list(),
         'svm_mean': list(),
         'svm_std': list(),
         'rf_mean': list(),
@@ -41,6 +44,10 @@ for name in data_list:
         'dt_percent': list(),
         'rf_percent': list(),
         'knn_percent': list(),
+        'dt_time': list(),
+        'svm_time': list(),
+        'rf_time': list(),
+        'knn_time': list(),
 
     }
     chisquared = {
@@ -56,6 +63,10 @@ for name in data_list:
         'rf_percent': list(),
         'knn_percent': list(),
         'svm_percent': list(),
+        'dt_time': list(),
+        'svm_time': list(),
+        'rf_time': list(),
+        'knn_time': list(),
     }
     anova = {
         'dt_mean': list(),
@@ -70,6 +81,10 @@ for name in data_list:
         'rf_percent': list(),
         'knn_percent': list(),
         'svm_percent': list(),
+        'dt_time': list(),
+        'svm_time': list(),
+        'rf_time': list(),
+        'knn_time': list(),
     }
     principal = {
         'dt_mean': list(),
@@ -84,8 +99,12 @@ for name in data_list:
         'rf_percent': list(),
         'knn_percent': list(),
         'svm_percent': list(),
+        'dt_time': list(),
+        'svm_time': list(),
+        'rf_time': list(),
+        'knn_time': list(),
     }
-    nruns = 30
+    nruns = 1
 
     df = pd.read_csv("./data/" + name)
 
@@ -132,16 +151,17 @@ for name in data_list:
         stkf = StratifiedKFold(10)
 
         # pipe original
-        pipe = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')),(str(models2[i]), m)])
+        pipe = Pipeline(steps=[(str(models2[i]), m)])
         search = RandomizedSearchCV(pipe, h, n_jobs=-1, cv=stkf, n_iter=nruns, scoring='balanced_accuracy')
         search.fit(X, y)
         # print(search.best_estimator_)
         original[models2[i] + '_mean'].append(search.cv_results_['mean_test_score'][search.best_index_])
         original[models2[i] + '_std'].append(search.cv_results_['std_test_score'][search.best_index_])
+        original[models2[i] + '_time'].append(search.cv_results_['mean_fit_time'][search.best_index_])
 
         # pipe vt
         try:
-            pipe_vt = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('vt', vt), (str(models2[i]), m)])
+            pipe_vt = Pipeline(steps=[('vt', vt), (str(models2[i]), m)])
             search_vt = RandomizedSearchCV(pipe_vt, {**hp_vt, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                            scoring='balanced_accuracy')
             search_vt.fit(X, y)
@@ -151,8 +171,10 @@ for name in data_list:
             variance[models2[i] + '_percent'].append(
                 (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (
                         X.shape[1] + sum(search_vt.best_estimator_.named_steps['vt'].get_support())))
+            variance[models2[i] + '_time'].append(search_vt.cv_results_['mean_fit_time'][search_vt.best_index_])
+
         except:
-            pipe_vt = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('vt', vt), (str(models2[i]), m)])
+            pipe_vt = Pipeline(steps=[('vt', vt), (str(models2[i]), m)])
             search_vt = RandomizedSearchCV(pipe_vt, {**h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                            scoring='balanced_accuracy')
             search_vt.fit(X, y)
@@ -162,10 +184,11 @@ for name in data_list:
             variance[models2[i] + '_percent'].append(
                 (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (
                         X.shape[1] + sum(search_vt.best_estimator_.named_steps['vt'].get_support())))
+            variance[models2[i] + '_time'].append(search_vt.cv_results_['mean_fit_time'][search_vt.best_index_])
 
 
         # pipe chi
-        pipe_chi = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('chi', chi), (str(models2[i]), m)])
+        pipe_chi = Pipeline(steps=[('chi', chi), (str(models2[i]), m)])
         search_chi = RandomizedSearchCV(pipe_chi, {**hp_chi, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                         scoring='balanced_accuracy')
         search_chi.fit(X, y)
@@ -174,9 +197,10 @@ for name in data_list:
         chisquared[models2[i] + '_percent'].append(
             (X.shape[1] - sum(search_chi.best_estimator_.named_steps['chi'].get_support())) / (
                     X.shape[1] + sum(search_chi.best_estimator_.named_steps['chi'].get_support())))
+        chisquared[models2[i] + '_time'].append(search_chi.cv_results_['mean_fit_time'][search_chi.best_index_])
 
         # pipe f_classif
-        pipe_f_cla = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('f_cla', f_cla), (str(models2[i]), m)])
+        pipe_f_cla = Pipeline(steps=[('f_cla', f_cla), (str(models2[i]), m)])
         search_f_cla = RandomizedSearchCV(pipe_f_cla, {**hp_f_cla, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                           scoring='balanced_accuracy')
         search_f_cla.fit(X, y)
@@ -185,9 +209,10 @@ for name in data_list:
         anova[models2[i] + '_percent'].append(
             (X.shape[1] - sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())) / (
                     X.shape[1] + sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())))
+        anova[models2[i] + '_time'].append(search_f_cla.cv_results_['mean_fit_time'][search_f_cla.best_index_])
 
         # pipe pca
-        pipe_pca = Pipeline(steps=[('imputer', SimpleImputer(strategy='mean')), ('pca', pca), (str(models2[i]), m)])
+        pipe_pca = Pipeline(steps=[('pca', pca), (str(models2[i]), m)])
         search_pca = RandomizedSearchCV(pipe_pca, {**hp_pca, **h}, n_jobs=-1, cv=stkf, n_iter=nruns,
                                         scoring='balanced_accuracy')
         search_pca.fit(X, y)
@@ -196,6 +221,7 @@ for name in data_list:
         principal[models2[i] + '_percent'].append(
             (X.shape[1] - search_pca.best_estimator_.named_steps['pca'].n_components_) / (
                     X.shape[1] + search_pca.best_estimator_.named_steps['pca'].n_components_))
+        principal[models2[i] + '_time'].append(search_pca.cv_results_['mean_fit_time'][search_pca.best_index_])
 
         i += 1
     pd.DataFrame(original).to_csv("./results/" + str(name.split('.')[0]) + "_original.csv", index=False)
