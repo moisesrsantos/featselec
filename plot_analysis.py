@@ -41,14 +41,14 @@ else:
 time = pd.read_csv("./results/time.csv")
 
 plt.figure(3)
-sns.barplot(data = time, ci="sd", orient = "h")
+sns.violinplot(data = time)
 plt.show()
 
 print("Time to Fit: ")
-stat3, p3 = friedmanchisquare(time["Chi-squared"],time["F ANOVA"],time["PCA"],time["Variance"])
+stat3, p3 = friedmanchisquare(time["Chi-squared"],time["F ANOVA"],time["PCA"],time["Variance"], time["Original"])
 print('Statistics=%.3f, p=%.3f' % (stat3, p3))
 alpha = 0.05
-if p2 > alpha:
+if p3 > alpha:
 	print('Same distributions (fail to reject H0)')
 else:
 	print('Different distributions (reject H0)')

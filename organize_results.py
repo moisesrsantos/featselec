@@ -112,7 +112,7 @@ for name in results_list:
 
         principal['time'].append(df["dt_time"].loc[0])
         principal['time'].append(df["rf_time"].loc[0])
-        principal['time'].append(df["svmtime"].loc[0])
+        principal['time'].append(df["svm_time"].loc[0])
         principal['time'].append(df["knn_time"].loc[0])
 
     elif("vt" in name):
@@ -139,5 +139,5 @@ for name in results_list:
 
 pd.DataFrame({"Chi-squared": chisquared['mean'],"F ANOVA": anova['mean'], "PCA": principal['mean'], "Variance": variance['mean'], "Original": original['mean']}).to_csv("./results/performance.csv",index = False)
 pd.DataFrame({"Chi-squared": chisquared['percent'],"F ANOVA": anova['percent'], "PCA": principal['percent'], "Variance": variance['percent']}).to_csv("./results/reduction.csv",index = False)
-pd.DataFrame({"Chi-squared": chisquared['time'],"F ANOVA": anova['time'], "PCA": principal['time'], "Variance": variance['time']}).to_csv("./results/time.csv",index = False)
+pd.DataFrame({"Chi-squared": chisquared['time'],"F ANOVA": anova['time'], "PCA": principal['time'], "Variance": variance['time'], "Original": original['time']}).to_csv("./results/time.csv",index = False)
 
