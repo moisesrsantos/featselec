@@ -169,8 +169,7 @@ for name in data_list:
             variance[models2[i] + '_mean'].append(search_vt.cv_results_['mean_test_score'][search_vt.best_index_])
             variance[models2[i] + '_std'].append(search_vt.cv_results_['std_test_score'][search_vt.best_index_])
             variance[models2[i] + '_percent'].append(
-                (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (
-                        X.shape[1] + sum(search_vt.best_estimator_.named_steps['vt'].get_support())))
+                (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (X.shape[1]))
             variance[models2[i] + '_time'].append(search_vt.cv_results_['mean_fit_time'][search_vt.best_index_])
 
         except:
@@ -182,8 +181,7 @@ for name in data_list:
             variance[models2[i] + '_mean'].append(search_vt.cv_results_['mean_test_score'][search_vt.best_index_])
             variance[models2[i] + '_std'].append(search_vt.cv_results_['std_test_score'][search_vt.best_index_])
             variance[models2[i] + '_percent'].append(
-                (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (
-                        X.shape[1] + sum(search_vt.best_estimator_.named_steps['vt'].get_support())))
+                (X.shape[1] - sum(search_vt.best_estimator_.named_steps['vt'].get_support())) / (X.shape[1]))
             variance[models2[i] + '_time'].append(search_vt.cv_results_['mean_fit_time'][search_vt.best_index_])
 
 
@@ -195,8 +193,7 @@ for name in data_list:
         chisquared[models2[i] + '_mean'].append(search_chi.cv_results_['mean_test_score'][search_chi.best_index_])
         chisquared[models2[i] + '_std'].append(search_chi.cv_results_['std_test_score'][search_chi.best_index_])
         chisquared[models2[i] + '_percent'].append(
-            (X.shape[1] - sum(search_chi.best_estimator_.named_steps['chi'].get_support())) / (
-                    X.shape[1] + sum(search_chi.best_estimator_.named_steps['chi'].get_support())))
+            (X.shape[1] - sum(search_chi.best_estimator_.named_steps['chi'].get_support())) / (X.shape[1]))
         chisquared[models2[i] + '_time'].append(search_chi.cv_results_['mean_fit_time'][search_chi.best_index_])
 
         # pipe f_classif
@@ -207,8 +204,7 @@ for name in data_list:
         anova[models2[i] + '_mean'].append(search_f_cla.cv_results_['mean_test_score'][search_f_cla.best_index_])
         anova[models2[i] + '_std'].append(search_f_cla.cv_results_['std_test_score'][search_f_cla.best_index_])
         anova[models2[i] + '_percent'].append(
-            (X.shape[1] - sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())) / (
-                    X.shape[1] + sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())))
+            (X.shape[1] - sum(search_f_cla.best_estimator_.named_steps['f_cla'].get_support())) / (X.shape[1]))
         anova[models2[i] + '_time'].append(search_f_cla.cv_results_['mean_fit_time'][search_f_cla.best_index_])
 
         # pipe pca
@@ -219,8 +215,7 @@ for name in data_list:
         principal[models2[i] + '_mean'].append(search_pca.cv_results_['mean_test_score'][search_pca.best_index_])
         principal[models2[i] + '_std'].append(search_pca.cv_results_['std_test_score'][search_pca.best_index_])
         principal[models2[i] + '_percent'].append(
-            (X.shape[1] - search_pca.best_estimator_.named_steps['pca'].n_components_) / (
-                    X.shape[1] + search_pca.best_estimator_.named_steps['pca'].n_components_))
+            (X.shape[1] - search_pca.best_estimator_.named_steps['pca'].n_components_) / (X.shape[1]))
         principal[models2[i] + '_time'].append(search_pca.cv_results_['mean_fit_time'][search_pca.best_index_])
 
         i += 1
